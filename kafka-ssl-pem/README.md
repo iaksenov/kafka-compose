@@ -14,3 +14,5 @@ security.protocol=SSL
 В OffsetExplorer, в настройках подключения, вкладка Security, Type = SSL.
 
 Проверено на сертификатах, созданных при помощи mkcert.
+
+В качестве примера использован ресурс: https://github.com/codingharbour/kafka-docker-compose/blob/master/kafka-ssl/docker-compose.yml
