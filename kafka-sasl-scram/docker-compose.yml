@@ -42,6 +42,8 @@ services:
       KAFKA_LISTENER_NAME_INTERNAL_PLAIN_SASL_JAAS_CONFIG: org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret" user_admin="admin-secret";
       KAFKA_LISTENER_NAME_INTERNAL_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
 
+      KAFKA_SASL_SERVER_CALLBACK_HANDLER_CLASS:
+
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/broker_jaas.conf
 
       KAFKA_AUTHORIZER_CLASS_NAME: "org.apache.kafka.metadata.authorizer.StandardAuthorizer"
@@ -55,7 +57,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
     volumes:
-      #- ./broker_jaas.conf:/etc/kafka/broker_jaas.conf
+      - ./broker_jaas.conf:/etc/kafka/broker_jaas.conf
       - ./update_storage.sh:/tmp/kraft/update_storage.sh
 
     command: bash -c '/tmp/kraft/update_storage.sh qnCgS_YjQP6asfPfQnKKeA admin:admin-secret SCRAM-SHA-256 false && /etc/confluent/docker/run ;'
