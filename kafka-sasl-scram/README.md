@@ -29,6 +29,11 @@ sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule require
 ./kafka-acls.sh --bootstrap-server kafka:9092 --command-config ./sasl-scram.properties --add --allow-principal User:alice --operation Read --operation Describe --group CONSUMER_GROUP
 ```
 
+#### В OffsetExplorer, в настройках подключения:
+- вкладка Security, Type = SASL Plaintext
+- вкладка Advanced, SASL Mechanism = SCRAM-SHA-256
+- вкладка JAAS Config: ```org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";```
+
 #### Links:
 - [Use SASL/SCRAM authentication in Confluent Platform](https://docs.confluent.io/platform/current/security/authentication/sasl/scram/overview.html#use-sasl-scram-authentication-in-cp)
 - [Use Access Control Lists (ACLs)](https://docs.confluent.io/platform/current/security/authorization/acls/overview.html)
