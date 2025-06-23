@@ -2,8 +2,12 @@
 Сервис выполняет две роли: брокер и координатор.
 
 Подключение SASL_PLAINTEXT на порту 9093, порт координатора кластера 9094 (также SASL_PLAINTEXT).\
-Механизм хеширования SCRAM-SHA-256
+Механизм хеширования SCRAM-SHA-256 (SCRAM-SHA-512 также поддерживается).
 
+> **Данный способ позволяет при помощи CLI команд добавлять/удалять пользователей в runtime.**
+
+Перед запуском кластера необходимо выполнять добавление SCRAM кредов на каждом контроллере.\
+(см. command в docker-compose.yml)
 
 #### Пример sasl-scram.properties для клиентов:
 ```properties
@@ -26,6 +30,7 @@ sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule require
 ```
 
 #### Links:
+- [Use SASL/SCRAM authentication in Confluent Platform](https://docs.confluent.io/platform/current/security/authentication/sasl/scram/overview.html#use-sasl-scram-authentication-in-cp)
 - [Use Access Control Lists (ACLs)](https://docs.confluent.io/platform/current/security/authorization/acls/overview.html)
 
 
