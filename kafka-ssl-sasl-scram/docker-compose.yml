@@ -1,0 +1,78 @@
+services:
+
+  kafka:
+    image: confluentinc/cp-kafka:7.9.1
+    container_name: kafka
+    hostname: kafka
+    restart: always
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+      - "9094:9094"
+    environment:
+      KAFKA_NODE_ID: 1
+      CLUSTER_ID: ${CLUSTER_ID}
+      #KAFKA_KRAFT_MODE: "true"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9094'
+
+      KAFKA_ADVERTISED_LISTENERS: >-
+        ${KAFKA_EXTERNAL_LISTENER_NAME}://${KAFKA_EXTERNAL_HOST}:9092,
+        ${KAFKA_INTERNAL_LISTENER_NAME}://${KAFKA_INTERNAL_HOST}:9093
+      KAFKA_LISTENERS: >-
+        ${KAFKA_EXTERNAL_LISTENER_NAME}://kafka:9092
+        ${KAFKA_INTERNAL_LISTENER_NAME}://kafka:9093,
+        ${KAFKA_CONTROLLER_LISTENER_NAME}://kafka:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: >-
+        ${KAFKA_EXTERNAL_LISTENER_NAME}:SASL_SSL,
+        ${KAFKA_INTERNAL_LISTENER_NAME}:SASL_PLAINTEXT,
+        ${KAFKA_CONTROLLER_LISTENER_NAME}:SASL_PLAINTEXT
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: ${KAFKA_INTERNAL_LISTENER_NAME}
+      KAFKA_CONTROLLER_LISTENER_NAMES: ${KAFKA_CONTROLLER_LISTENER_NAME}
+
+      KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-256
+      KAFKA_SASL_MECHANISM_CONTROLLER_PROTOCOL: SCRAM-SHA-256
+
+      KAFKA_SUPER_USERS: User:admin
+
+      # pattern: KAFKA_LISTENER_NAME_(listener name)_PLAIN_SASL_JAAS_CONFIG
+      KAFKA_LISTENER_NAME_CONTROLLER_PLAIN_SASL_JAAS_CONFIG: org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret" user_admin="admin-secret";
+      KAFKA_LISTENER_NAME_CONTROLLER_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+
+      KAFKA_LISTENER_NAME_INTERNAL_PLAIN_SASL_JAAS_CONFIG: org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret" user_admin="admin-secret";
+      KAFKA_LISTENER_NAME_INTERNAL_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+
+      KAFKA_LISTENER_NAME_EXTERNAL_PLAIN_SASL_JAAS_CONFIG: org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret" user_admin="admin-secret";
+      KAFKA_LISTENER_NAME_EXTERNAL_SASL_ENABLED_MECHANISMS: SCRAM-SHA-256
+
+      KAFKA_SASL_SERVER_CALLBACK_HANDLER_CLASS:
+
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/broker_jaas.conf
+
+      KAFKA_AUTHORIZER_CLASS_NAME: "org.apache.kafka.metadata.authorizer.StandardAuthorizer"
+
+      # ALLOW EVERYONE=TRUE IS NOT FOR PRODUCTION USE !!!
+      #KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: true
+
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/fullchain.pem
+      KAFKA_SSL_KEYSTORE_TYPE: PEM
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/rootCA.pem
+      KAFKA_SSL_TRUSTSTORE_TYPE: PEM
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_MESSAGE_MAX_BYTES: 10485880
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+    volumes:
+      - cert/fullchain.pem:/etc/kafka/secrets/fullchain.pem
+      - cert/rootCA.pem:/etc/kafka/secrets/rootCA.pem
+      - ./broker_jaas.conf:/etc/kafka/broker_jaas.conf
+      - ./update_storage.sh:/tmp/kraft/update_storage.sh
+
+    # Команда добавления нескольких суперюзеров:
+    command: bash -c '/tmp/kraft/update_storage.sh ${CLUSTER_ID} admin:admin-secret SCRAM-SHA-256 false && /etc/confluent/docker/run ;'
+
+
