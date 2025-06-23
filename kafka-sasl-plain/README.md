@@ -8,9 +8,9 @@
 KAFKA_SUPER_USERS имена суперпользователей, можно через запятую: User:admin1,User:admin2
 
 Клиентам для авторизации подключения достаточно указать:
-sasl.mechanism=PLAIN
-security.protocol=SASL_PLAINTEXT
-sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=admin password=admin-secret;
+- sasl.mechanism=PLAIN
+- security.protocol=SASL_PLAINTEXT
+- sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=admin password=admin-secret;
 
 Для использования с shell командами из дистрибутива (типа kafka-consumer-groups.sh, kafka-topics.sh) необходимо дополнительно указать проперти файл, например так:
 --command-config ./client-ssl.properties
