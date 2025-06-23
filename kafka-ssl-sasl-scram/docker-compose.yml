@@ -20,7 +20,7 @@ services:
         ${KAFKA_EXTERNAL_LISTENER_NAME}://${KAFKA_EXTERNAL_HOST}:9092,
         ${KAFKA_INTERNAL_LISTENER_NAME}://${KAFKA_INTERNAL_HOST}:9093
       KAFKA_LISTENERS: >-
-        ${KAFKA_EXTERNAL_LISTENER_NAME}://kafka:9092
+        ${KAFKA_EXTERNAL_LISTENER_NAME}://kafka:9092,
         ${KAFKA_INTERNAL_LISTENER_NAME}://kafka:9093,
         ${KAFKA_CONTROLLER_LISTENER_NAME}://kafka:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: >-
@@ -67,8 +67,8 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
     volumes:
-      - cert/fullchain.pem:/etc/kafka/secrets/fullchain.pem
-      - cert/rootCA.pem:/etc/kafka/secrets/rootCA.pem
+      - ./cert/fullchain.pem:/etc/kafka/secrets/fullchain.pem
+      - ./cert/rootCA.pem:/etc/kafka/secrets/rootCA.pem
       - ./broker_jaas.conf:/etc/kafka/broker_jaas.conf
       - ./update_storage.sh:/tmp/kraft/update_storage.sh
 
